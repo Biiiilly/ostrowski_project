@@ -43,38 +43,40 @@ def mul_ring_norm.padic (p : ℕ) [hp : Fact (Nat.Prime p)] : MulRingNorm ℚ :=
 { toFun    := λ x : ℚ ↦ (padicNorm p x: ℝ)
   map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
   add_le'   := by
-    
-    sorry
+    simp
+    norm_cast
+    exact padicNorm.triangle_ineq
   neg'      := by simp only [padicNorm.neg, eq_self_iff_true, forall_const],
-  eq_zero_of_map_eq_zero' := by sorry
+  eq_zero_of_map_eq_zero' := by
+    simp
+    norm_cast
+    exact @padicNorm.zero_of_padicNorm_eq_zero p _
   map_one' := by simp [padicNorm.one]
   map_mul' := by simp only [padicNorm.mul, Rat.cast_mul, eq_self_iff_true, forall_const]
 }
 
-@[simp] lemma mul_ring_norm_eq_padic_norm (p : ℕ) [hp : fact (nat.prime p)] (r : ℚ) :
-  mul_ring_norm.padic p r = padic_norm p r := rfl
+@[simp] lemma mul_ring_norm_eq_padic_norm (p : ℕ) [Fact (Nat.Prime p)] (r : ℚ) :
+  mul_ring_norm.padic p r = padicNorm p r := rfl
 
-lemma mul_ring_norm.padic_is_nonarchimedean (p : ℕ) [hp : fact (nat.prime p)] :
+lemma mul_ring_norm.padic_is_nonarchimedean (p : ℕ) [hp : Fact (Nat.Prime p)] :
   is_nonarchimedean (@mul_ring_norm.padic p hp) :=
-begin
-  simp only [is_nonarchimedean_def, mul_ring_norm_eq_padic_norm],
-  exact_mod_cast @padic_norm.nonarchimedean p _
-end
+by
+  simp only [is_nonarchimedean_def, mul_ring_norm_eq_padic_norm]
+  exact_mod_cast @padicNorm.nonarchimedean p _
 
 end padic
 
-variable {f : mul_ring_norm ℚ}
+variable {f : MulRingNorm ℚ}
 
 section non_archimedean
 
 -- Show that 𝔞 is an ideal
 -- Maybe this should be inserted into the final proof.
-def 𝔞 (harc : is_nonarchimedean f) : ideal ℤ :=
+def 𝔞 (harc : is_nonarchimedean f) : Ideal ℤ :=
 { carrier := {a : ℤ | f a < 1},
-  add_mem' := λ a b ha hb, by simp only [set.mem_set_of_eq, int.cast_add] at ha hb ⊢;
-    linarith [(harc a b), (max_lt ha hb)],
-  zero_mem' := by simp only [set.mem_set_of_eq, algebra_map.coe_zero, map_zero, zero_lt_one],
-  smul_mem' := λ a b hb, by simp only [algebra.id.smul_eq_mul, set.mem_set_of_eq, int.cast_mul,
+  add_mem' := λ a b ha hb ↦ by simp only [Set.mem_setOf_eq, Int.cast_add] at ha hb ⊢; linarith [(harc a b), (max_lt ha hb)],
+  zero_mem' := by simp only [Set.mem_setOf_eq, algebra_map.coe_zero, map_zero, zero_lt_one],
+  smul_mem' := λ a b hb ↦ by simp only [algebra.id.smul_eq_mul, Set.mem_setOf_eq, int.cast_mul,
     map_mul, mul_lt_of_le_of_lt_one' (int_norm_le_one a harc) hb (map_nonneg f b) zero_lt_one]}
 
 --Maybe this should be inserted into the final proof.
