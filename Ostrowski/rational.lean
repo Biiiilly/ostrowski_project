@@ -64,6 +64,7 @@ by
   simp only [is_nonarchimedean_def, mul_ring_norm_eq_padic_norm]
   exact_mod_cast @padicNorm.nonarchimedean p _
 
+
 end padic
 
 variable {f : MulRingNorm ℚ}
