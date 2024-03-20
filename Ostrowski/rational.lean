@@ -74,10 +74,14 @@ section non_archimedean
 -- Maybe this should be inserted into the final proof.
 def 𝔞 (harc : is_nonarchimedean f) : Ideal ℤ :=
 { carrier := {a : ℤ | f a < 1},
-  add_mem' := λ a b ha hb ↦ by simp only [Set.mem_setOf_eq, Int.cast_add] at ha hb ⊢; linarith [(harc a b), (max_lt ha hb)],
-  zero_mem' := by simp only [Set.mem_setOf_eq, algebra_map.coe_zero, map_zero, zero_lt_one],
-  smul_mem' := λ a b hb ↦ by simp only [algebra.id.smul_eq_mul, Set.mem_setOf_eq, int.cast_mul,
-    map_mul, mul_lt_of_le_of_lt_one' (int_norm_le_one a harc) hb (map_nonneg f b) zero_lt_one]}
+  add_mem' := @λ a b ha hb ↦ by simp only [Set.mem_setOf_eq, Int.cast_add] at ha hb ⊢; linarith [(harc a b), (max_lt ha hb)],
+  zero_mem' := by simp only [Set.mem_setOf_eq, Int.cast_zero, map_zero, zero_lt_one],
+  smul_mem' := @λ a b hb ↦ by
+    simp [Algebra.id.smul_eq_mul, Set.mem_setOf_eq, Int.cast_mul,
+    map_mul]
+    simp only [Set.mem_setOf_eq] at hb
+    apply (Left.mul_lt_one_of_le_of_lt)
+    sorry}
 
 --Maybe this should be inserted into the final proof.
 lemma a_proper (harc : is_nonarchimedean f) : 𝔞 harc ≠ (⊤ : ideal ℤ) :=
